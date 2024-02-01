@@ -1,0 +1,32 @@
+Backend (node+express+mongodb) Architecture:
+
+Middleware:
+The middleware directory houses middleware functions, which are functions that have access to the request 
+and response objects (req, res) and can modify them or terminate the request-response cycle.
+Purpose: Middleware functions are used for tasks such as authentication, logging, error handling, parsing 
+request bodies, and more. Placing middleware in a dedicated directory promotes code organization and 
+separation of concerns.
+
+
+Controllers:
+The controllers folder contains the controller files, which handle the application's HTTP requests and 
+responses. They contain the main business logic for processing incoming requests and forming the outgoing 
+response. We should never make database calls inside of a controller.
+Purpose: Separating the handling of HTTP requests and responses from the route definitions promotes code 
+organization, reusability, and testability. Controllers are typically responsible for interacting with 
+models, applying business logic, and forming responses.
+
+
+Models:
+The model's directory typically stores files that define the data schema and interact with the database, 
+representing abstractions of the data stored in the database.
+Purpose: Models provide an interface for querying and manipulating the data in the database. They 
+encapsulate the business logic related to data storage and retrieval and serve as an intermediary between 
+the application and the database, promoting data integrity and consistency.
+
+Routes:
+The routes directory contains files that define the application's routes and associated route-handling 
+logic, such as request validation, authorization, or calling the appropriate controller methods.
+Purpose: Separate route definitions enable a clear separation of concerns and promote maintainability. 
+By placing route-related logic in a dedicated directory, it becomes easier to manage, document, and 
+add new routes without cluttering the main app file.
