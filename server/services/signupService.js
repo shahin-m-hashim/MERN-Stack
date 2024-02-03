@@ -1,20 +1,12 @@
 const userDoc = require("../database/models/userModel");
-const dbErrorHandler = require("../utils/dbErrorHandler");
+const handleDbErrors = require("../utils/handleDbErrors");
 
-const findUserByUsername = async username => {
-    try {
-        return await userDoc.findOne({ username })
-    } catch (e) {
-        return dbErrorHandler(e);
-    }
-};
-
-const createUser = async userData => {
+const signUpUser = async userData => {
     try {
         return await userDoc.create(userData);
     } catch (e) {
-        return dbErrorHandler(e);
+        return handleDbErrors(e);
     }
-};
+}
 
-module.exports = { createUser, findUserByUsername };
+module.exports = signUpUser;

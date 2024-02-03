@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema(
         username: {
             type: String, // converts username to String if not already
             lowercase: true, // converts username lowercase if not already
-            minlength: [5, "Minimum username length is 5 characters"],
+            minlength: [5, "Minimum length is 5 characters"],
             unique: true,
             // for unique we cant set a message, instead we can utilize the error code 11000
             required: [true, "Username is required"],
@@ -44,20 +44,17 @@ const userSchema = new mongoose.Schema(
 )
 
 userSchema.pre('save', async function (next) {
-    console.log('A new user is about to be created & saved to the db');
-
     try {
         this.password = await bcrypt.hash(this.password, 12);
         next();
-    }
-    catch (e) {
+    } catch (e) {
         console.error(e.message);
     }
 })
 
 // fire a fn after a doc is saved to the db
 userSchema.post('save', (doc, next) => {
-    console.log(doc, 'A new user is created & saved successfully to the db');
+    console.log("A new user with id", doc.id, "is created & saved successfully to the db");
     next();
 })
 

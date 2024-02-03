@@ -1,32 +1,36 @@
-const { createUser, findUserByUsername } = require("../services/signupService");
+const signUpUser = require("../services/signupService");
 
 const controller = async (req, res) => {
     try {
-        const { username } = req.body;
-        const existingUser = await findUserByUsername(username);
-        if (existingUser) {
-            console.error("User with username", username, "already exists");
+        const signupRes = req.body && await signUpUser(req.body);
+
+        if (!signupRes.reason) {
+            const { username, email, createdAt } = signupRes;
+
+            return res.status(201).json({
+                success: true,
+                data: { username, email, createdAt },
+                message: `User ${signupRes._id} signed up successfully`,
+            })
+        } else if (signupRes.type === 'Error' && signupRes.reason === 'VALIDATION(S)_FAILED') {
+            return res.status(400).json({
+                success: false,
+                data: signupRes,
+                message: 'Validations failed',
+            })
+        } else if (signupRes.type === 'Error' && signupRes.reason === 'ALREADY_EXISTS') {
             return res.status(409).json({
                 success: false,
-                error: "User already exists"
-            });
+                data: signupRes,
+                message: `User already registered`,
+            })
         } else {
-            const userRes = await createUser(req.body);
-            if (userRes.type !== 'Error') {
-                console.log("User created successfully");
-                res.status(201).json({
-                    success: true,
-                    data: userRes,
-                    message: `User ${userRes._id} signed up successfully`,
-                })
-            } else {
-                console.error("User creation failed");
-                res.status(400).json({
-                    success: false,
-                    data: userRes,
-                    error: "User creation failed",
-                });
-            }
+            console.log('Error:', signupRes)
+            return res.status(400).json({
+                success: false,
+                data: signupRes,
+                message: "User creation failed",
+            });
         }
     } catch (e) {
         console.error(e.message);
