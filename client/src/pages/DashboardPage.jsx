@@ -1,18 +1,25 @@
 import axios from "axios";
-import ErrorPage from "./ErrorPage";
 import { useEffect, useState } from "react";
 import LoadingComponent from "../components/LoadingComponent";
+import { useNavigate } from "react-router-dom";
+
+const base_url = import.meta.env.VITE_APP_BASE_URL;
 
 export default function DashboardPage() {
-  const [data, setData] = useState(null);
   const [status, setStatus] = useState("IDLE");
+  const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
       setStatus("LOADING");
-      const { data } = await axios.get("https://randomuser.me/api?results=10");
+      const { data } = await axios.post(
+        base_url + "authenticateUser",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
       console.log(data);
-      setData(data.results);
       setStatus("SUCCESS");
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -24,11 +31,15 @@ export default function DashboardPage() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    if (status === "ERROR") {
+      navigate("/login");
+    }
+  }, [status, navigate]);
+
   if (status === "LOADING") {
     return <LoadingComponent />;
-  } else if (status === "ERROR") {
-    return <ErrorPage />;
   } else if (status === "SUCCESS") {
-    return <h1>Welcome to Your Dashboard {data && data[0].name.first}</h1>;
+    return <h1>Welcome to Your Dashboard</h1>;
   }
 }

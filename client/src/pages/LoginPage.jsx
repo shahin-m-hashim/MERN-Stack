@@ -18,7 +18,7 @@ export default function LoginPage() {
     axios
       .post(base_url + "api/login", values, { withCredentials: true })
       .then((response) => {
-        console.log(response);
+        console.log(response.data);
       })
       .catch((e) => {
         console.log(e);
