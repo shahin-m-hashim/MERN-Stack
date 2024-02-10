@@ -1,6 +1,6 @@
 const logger = (req, res, next) => {
-    console.log("Client has requested path:", req.path);
-    next();
-}
+  console.log("Requested path:", req.path + "\nRequest Method:", req.method);
+  next();
+};
 
-module.exports = logger
+module.exports = logger;

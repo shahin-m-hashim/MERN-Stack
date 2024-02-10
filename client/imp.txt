@@ -1,0 +1,86 @@
+Very Very Important when connecting the front end and back end.
+Hrs of debugging and finally found the solution.
+
+When you are connecting the front end and back end, make sure that the back end is 
+running on the same IP address as the front end. But in real-life applications, 
+this is not the case, most of the time the back end and front end might have different origins.
+
+Remember localhost:3000 and localhost:5173 are different origins.
+The browser uses the port number to differentiate between different origins.
+
+So, when you are connecting the front end and back end, and you are running the back end on a different 
+IP address, then you have to enable CORS on the back end. 
+
+To do this simply add the following code to the back-end express server.
+
+server.js - 
+const cors = require("cors");
+app.use(
+    cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+    })
+);
+
+Now, this will allow the front end running on http://localhost:5173 to connect to the back end.
+
+Now in the front end use .env to store the backend URL
+this is a very important part
+
+localhost and 127.0.0.1 are not the same thing. 
+localhost is a domain name that is used to refer to this computer.
+127.0.0.1 is an IP address that the domain name 'localhost' resolves to.
+
+Therefore when adding the base URL in the .env file, use the domain name 'localhost' and not the 
+IP address, eg: VITE_APP_BASE_URL = 'http://localhost:3000/'
+
+If you add VITE_APP_BASE_URL = 'http://127.0.0.1:3000/'
+
+you might suffer from a bunch of errors related to cookies and CORS.
+
+Also in the front end access this value in vite using -
+const base_url = import.meta.env.VITE_APP_BASE_URL;
+ 
+Now, you can create cookies without having to enforce HTTPS in development and works just fine
+
+res.cookie("jwt", token, {
+httpOnly: true,
+withCredentials: true,
+maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day in milliseconds
+});
+
+
+
+
+In case YOU WANT TO ADD HTTPS to your front-end URL in development, you can do the following:
+
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import basicSsl from "@vitejs/plugin-basic-ssl";
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [basicSsl(), react()],
+});
+
+Make use of basicSsl from "@vitejs/plugin-basic-ssl";
+Now your front end will run on https://localhost:3000/.
+
+In case of using https create cookies like - 
+
+res.cookie("jwt", token, {
+httpOnly: true,
+secure: true,
+sameSite: "none",
+withCredentials: true,
+maxAge: 1 * 24 * 60 * 60 * 1000, // 1 day in milliseconds
+});
+
+THE BASE URL is very very important incase something doesn't work, for eg:
+1. CORS errors
+2. cookies not being set without HTTPS
+3. cookies set but not persisting after refresh and acting like sessions
+
+These can happen as part of domain mismatch, so make sure to use the correct base URL in the 
+.env file and access it in the front end using import.meta.env.VITE_APP_BASE_URL
