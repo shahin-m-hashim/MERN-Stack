@@ -2,12 +2,15 @@ import axios from "axios";
 import { useId } from "react";
 import { useFormik } from "formik";
 import { validationSchema } from "../validations/loginValidation";
+import { useNavigate } from "react-router-dom";
 
 const base_url = import.meta.env.VITE_APP_BASE_URL;
 
 export default function LoginPage() {
   const emailId = useId();
   const passwordId = useId();
+
+  const navigate = useNavigate();
 
   const initialValues = {
     email: "johnie@yahoo.com",
@@ -19,12 +22,12 @@ export default function LoginPage() {
       .post(base_url + "api/login", values, { withCredentials: true })
       .then((response) => {
         console.log(response.data);
+        navigate("/dashboard", { replace: true });
       })
       .catch((e) => {
         console.log(e);
         alert(e.response.data.error);
-      })
-      .finally(() => console.log("Done Posting"));
+      });
   };
 
   const formik = useFormik({

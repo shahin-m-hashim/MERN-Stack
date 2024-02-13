@@ -1,19 +1,19 @@
 export default function ServerErrorPage() {
   return (
     <div>
-      <div className="w-full h-screen flex flex-col lg:flex-row items-center justify-center space-y-16 lg:space-y-0 space-x-8 2xl:space-x-0">
-        <div className="w-full lg:w-1/2 flex flex-col items-center justify-center lg:px-2 xl:px-0 text-center">
-          <p className="text-7xl md:text-8xl lg:text-9xl font-bold tracking-wider text-gray-300">
+      <div className="flex flex-col items-center justify-center w-full h-screen space-x-8 space-y-16 lg:flex-row lg:space-y-0 2xl:space-x-0">
+        <div className="flex flex-col items-center justify-center w-full text-center lg:w-1/2 lg:px-2 xl:px-0">
+          <p className="font-bold tracking-wider text-gray-300 text-7xl md:text-8xl lg:text-9xl">
             500
           </p>
-          <p className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-wider text-gray-300 mt-2">
+          <p className="mt-2 text-4xl font-bold tracking-wider text-gray-300 md:text-5xl lg:text-6xl">
             Server Error
           </p>
-          <p className="text-lg md:text-xl lg:text-2xl text-gray-500 my-12">
+          <p className="my-12 text-lg text-gray-500 md:text-xl lg:text-2xl">
             Whoops, something went wrong on our servers.
           </p>
         </div>
-        <div className="w-1/2 lg:h-full flex lg:items-end justify-center p-4">
+        <div className="flex justify-center w-1/2 p-4 lg:h-full lg:items-end">
           <svg
             className="w-full text-blue-600"
             xmlns="http://www.w3.org/2000/svg"

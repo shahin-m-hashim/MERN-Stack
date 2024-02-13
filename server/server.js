@@ -9,10 +9,7 @@ const signUpRoute = require("./routes/signUpRoute");
 const userRoute = require("./routes/userRoute");
 const pathLogger = require("./middlewares/pathLogger");
 const unknownRouteHandler = require("./middlewares/unknownRouteHandler");
-const {
-  isUserAuthenticated,
-  secureUserAuth,
-} = require("./middlewares/authMiddleware");
+const { verifyToken, refreshToken } = require("./middlewares/authMiddleware");
 
 const startApp = async () => {
   try {
@@ -43,9 +40,12 @@ const startApp = async () => {
     app.use("/api", [signUpRoute, loginRoute]);
 
     // Protected Routes
-    app.use("/authenticate", isUserAuthenticated, [userRoute]);
 
-    app.use("/secureAuth", secureUserAuth);
+    // Initial Authentication
+    app.use("/authenticate", verifyToken, userRoute);
+
+    // Refresh and keep user logged in
+    app.use("/refresh", refreshToken, verifyToken, userRoute);
 
     // Unknown routes handling middlewares
     app.use("*", unknownRouteHandler);

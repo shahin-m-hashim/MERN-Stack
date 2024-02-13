@@ -1,10 +1,13 @@
 import { useFormik } from "formik";
 import { validationSchema } from "../validations/signupValidation";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const base_url = import.meta.env.VITE_APP_BASE_URL;
 
 export default function SignupPage() {
+  const navigate = useNavigate();
+
   const initialValues = {
     username: "johnie",
     email: "johnie@yahoo.com",
@@ -12,20 +15,20 @@ export default function SignupPage() {
     cPassword: "John@123",
   };
 
-  const postData = async (data) => {
-    try {
-      const response = await axios.post(base_url + "api/signup", data);
-      console.log(response);
-    } catch (e) {
-      console.log(e.response);
-    } finally {
-      console.log("Done Posting");
-    }
-  };
-
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
     const { username, email, password } = values;
-    postData({ username, email, password });
+
+    try {
+      const response = await axios.post(base_url + "api/signup", {
+        username,
+        email,
+        password,
+      });
+      console.log(response.data);
+      navigate("/api/login", { replace: true });
+    } catch (error) {
+      console.error(error.response);
+    }
   };
 
   const {

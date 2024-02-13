@@ -1,51 +1,68 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+console.log("Inside Auth Middleware");
 
-const isUserAuthenticated = (req, res, next) => {
-  console.log("Inside Auth Middleware");
-  const token = req.cookies.accJwt;
-
-  if (!token) {
-    return res
-      .status(401)
-      .json({ status: false, error: "Invalid Credentials" });
-  }
+const verifyToken = (req, res, next) => {
+  console.log("\nVerifying Access Token");
+  const accessToken = req.cookies.jwt;
 
   try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET_KEY);
+    if (!accessToken) {
+      res.clearCookie("jwt");
+      console.log("Token doesn't exist");
+      return res
+        .status(401)
+        .json({ status: false, error: "Access Denied. No token provided." });
+    }
+
+    req.user = jwt.verify(accessToken, process.env.JWT_SECRET_KEY);
     next();
   } catch (err) {
     console.log("Invalid token:", err.message);
     return res
       .status(401)
-      .json({ status: false, error: "Invalid Credentials" });
+      .json({ status: false, error: "Access Denied. Invalid token." });
   }
 };
 
-const secureUserAuth = (req, res, next) => {
-  const prevToken = req.cookies.accJwt;
+const refreshToken = (req, res, next) => {
+  const prevToken = req.cookies.jwt;
 
   if (!prevToken) {
-    return res
-      .status(401)
-      .json({ status: false, error: "Invalid Credentials" });
+    return res.status(401).json({
+      status: false,
+      error: "Access Denied. Refresh token doesn't exist",
+    });
   }
 
   try {
-    jwt.verify(prevToken, process.env.JWT_REFRESH_KEY);
-    res.clearCookie("accJwt");
+    const { userId, username } = jwt.verify(
+      prevToken,
+      process.env.JWT_SECRET_KEY
+    );
 
-    const refreshToken = jwt.sign({}, process.env.JWT_REFRESH_KEY, {
-      expiresIn: "30s",
-    });
+    // Clear the old access token cookie
+    res.clearCookie("jwt");
+
+    // Refresh and generate a new access token
+    const refreshedToken = jwt.sign(
+      { userId, username },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "1d" } // 1 day
+    );
 
     // Set the new refresh token in the response cookie
-    res.cookie("refJwt", refreshToken, { httpOnly: true, secure: true });
+    res.cookie("jwt", refreshedToken, {
+      httpOnly: true,
+      withCredentials: true,
+      expires: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1 days
+    });
+
     next();
   } catch (err) {
-    console.log("Invalid token:", err.message);
-    return res.status(403).json({ status: false, error: "Unauthorized" });
+    console.error("Invalid token:", err.message);
+    return res.status(401).json({ status: false, error: "Unauthorized" });
   }
 };
 
-module.exports = { isUserAuthenticated, secureUserAuth };
+module.exports = { verifyToken, refreshToken };

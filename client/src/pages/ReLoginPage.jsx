@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function ErrorPage() {
+export default function ReLoginPage() {
   const navigate = useNavigate();
 
   // useEffect(() => {
@@ -9,7 +9,7 @@ export default function ErrorPage() {
   // }, [navigate]);
 
   useEffect(() => {
-    setInterval(() => navigate("/"), 1500);
+    setInterval(() => navigate("/api/login"), 1500);
   }, [navigate]);
 
   return (
@@ -17,7 +17,8 @@ export default function ErrorPage() {
       <div className="text-center">
         <h1 className="mb-4 text-6xl font-semibold text-red-500">404</h1>
         <p className="mb-4 text-lg text-gray-600">
-          Oops! Looks like you are lost.
+          Oops! Your Session has expired.
+          <br /> Please Login Again.
         </p>
         <div className="animate-bounce">
           <svg
@@ -36,7 +37,7 @@ export default function ErrorPage() {
         </div>
 
         <p> We are getting you back home.</p>
-        {/* <Link to="/" className="block text-xl mt-3 text-blue-500 ">
+        {/* <Link to="/" className="block mt-3 text-xl text-blue-500 ">
           Oops, not enough patience, Click here.
         </Link> */}
       </div>

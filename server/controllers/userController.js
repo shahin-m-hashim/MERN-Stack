@@ -3,11 +3,15 @@ const userController = async (req, res) => {
   const { userId, username } = req.user;
 
   if (req.user) {
-    res
-      .status(200)
-      .send(`Successfully logged in as user ${userId}\nWelcome ${username}`);
+    return res.status(200).send({
+      success: true,
+      message: `Login successful, Welcome ${username}`,
+      data: { userId, username },
+    });
   } else {
-    res.status(401).send({ status: false, error: "Invalid Credentials" });
+    return res
+      .status(401)
+      .send({ success: false, error: "Invalid Credentials" });
   }
 };
 

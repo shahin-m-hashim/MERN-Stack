@@ -1,17 +1,21 @@
-const authenticateUser = require("../services/loginService");
+const verifyCredentials = require("../services/loginService");
 
 const controller = async (req, res) => {
   // console.log("Inside login controller");
 
   try {
     const { email, password } = req.body;
-    const token = await authenticateUser(email, password);
+    const token = await verifyCredentials(email, password);
+
+    if (req.cookies.jwt) {
+      req.cookies.jwt = "";
+    }
 
     if (token) {
-      res.cookie("accJwt", token, {
+      res.cookie("jwt", token, {
         httpOnly: true,
         withCredentials: true,
-        maxAge: 1 * 60 * 1000, // 1 min
+        expires: new Date(Date.now() + 1 * 60 * 1000), // 1 min
       });
       return res.status(200).json({
         success: true,

@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 const userDoc = require("../database/models/userModel");
 const dbErrorHandler = require("../utils/handleDbErrors");
 
-const authenticateUser = async (email, password) => {
+const verifyCredentials = async (email, password) => {
   // console.log("Inside login service");
 
   try {
@@ -19,9 +19,7 @@ const authenticateUser = async (email, password) => {
         const token = jwt.sign(
           { userId: id, username },
           process.env.JWT_SECRET_KEY,
-          {
-            expiresIn: "1hr",
-          }
+          { expiresIn: "1m" }
         );
 
         return token;
@@ -34,4 +32,4 @@ const authenticateUser = async (email, password) => {
   }
 };
 
-module.exports = authenticateUser;
+module.exports = verifyCredentials;
